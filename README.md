@@ -25,7 +25,7 @@ cd 2d-mimic
 mkdir checkpoints
 ```
 
-##Checkpoints
+## Checkpoints
 
 Save these files in checkpoints dir
 1. Download landmark checkpoints from [here](dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
