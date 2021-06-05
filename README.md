@@ -25,7 +25,7 @@ cd 2d-mimic
 mkdir checkpoints
 ```
 
-#Checkpoints
+##Checkpoints
 Save these files in checkpoints dir
 1. Download landmark checkpoints from [here](dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
 2. Download model with name R_50_FPN_WC1_s1x from [chart-based model zoo](https://github.com/facebookresearch/detectron2/blob/master/projects/DensePose/doc/DENSEPOSE_IUV.md#ModelZoo)
