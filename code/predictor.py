@@ -22,6 +22,11 @@ facemesh = mp_face_mesh.FaceMesh(max_num_faces=1)
 
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
+from code.iris_landmarks import IrisLandmarks
+gpu = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# net = IrisLandmarks().to(gpu)
+# net.load_weights("checkpoints/irislandmarks.pth")
+
 
 
 class Predictor:
@@ -38,6 +43,17 @@ class Predictor:
         self.out_type = output_type
         self.dp_predictor = DefaultPredictor(cfg)
         self.extractor = create_extractor(self.vis)
+        self.iris_predictor = IrisLandmarks().to(gpu)
+        self.iris_predictor.load_weights("checkpoints/irislandmarks.pth")
+
+
+    def is_black_pixel(self, color_rgb):
+        black_lower_range = [80, 50, 50]
+
+        if ((color_rgb[0] <= black_lower_range[0] and color_rgb[1] <= black_lower_range[1] and color_rgb[2] <=
+                     black_lower_range[2])):
+            return True
+        return False
 
     def lm_predict(self, img, out):
         mp_result = facemesh.process(img)
@@ -52,6 +68,27 @@ class Predictor:
                     x, y = int(lm.x * iw), int(lm.y * ih)
                     face.append([x, y])
                 cv2.fillPoly(out, [np.array([face[idx] for idx in LandmarkConfig.outer_layer1])], (94, 102, 161))
+
+                # for eye patches
+                x1, y1 = int((face[159][0] + face[145][0])/2), int((face[159][1] + face[145][1])/2)
+                left_eye_patch = img[y1-32:y1+32, x1-32: x1+32]
+                left_eye_patch = cv2.resize(left_eye_patch, (64, 64), interpolation=cv2.INTER_AREA)
+                eye_gpu, iris_gpu = self.iris_predictor.predict_on_image(left_eye_patch)
+                iris = iris_gpu.cpu().numpy()
+                xs1, ys1 = iris[:, :, 0][0], iris[:, :, 1][0]
+                xs1 = [int(x1 - 32 + xs1[i]) for i in range(5)]
+                ys1 = [int(y1 - 32 + ys1[i]) for i in range(5)]
+
+                x2, y2 = int((face[386][0] + face[374][0]) / 2), int((face[386][1] + face[374][1]) / 2)
+                right_eye_patch = img[y2 - 32:y2 + 32, x2 - 32: x2 + 32]
+                right_eye_patch = cv2.resize(left_eye_patch, (64, 64), interpolation=cv2.INTER_AREA)
+                eye_gpu, iris_gpu = self.iris_predictor.predict_on_image(right_eye_patch)
+                iris = iris_gpu.cpu().numpy()
+                xs2, ys2 = iris[:, :, 0][0], iris[:, :, 1][0]
+                xs2 = [int(x2 - 32 + xs2[i]) for i in range(5)]
+                ys2 = [int(y2 - 32 + ys2[i]) for i in range(5)]
+
+
                     # print(id, x, y)
                 for id, lm in enumerate(face):
                     if id in LandmarkConfig.left_eybrow or id in LandmarkConfig.right_eybrow\
@@ -64,8 +101,8 @@ class Predictor:
                         cv2.circle(out, (lm[0], lm[1]), 1, (0, 0, 0), -1)
 
 
-                cv2.fillPoly(out, [np.array([face[idx] for idx in ShadeConfig.left_side_pts])], (94, 102, 161))
-                cv2.fillPoly(out, [np.array([face[idx] for idx in ShadeConfig.right_side_pts])], (94, 102, 161))
+                # cv2.fillPoly(out, [np.array([face[idx] for idx in ShadeConfig.left_side_pts])], (94, 102, 161))
+                # cv2.fillPoly(out, [np.array([face[idx] for idx in ShadeConfig.right_side_pts])], (94, 102, 161))
                 cv2.fillPoly(out, [np.array([face[idx] for idx in LandmarkConfig.right_eybrow])], (0, 0, 0))
                 cv2.fillPoly(out, [np.array([face[idx] for idx in LandmarkConfig.left_eybrow])], (0, 0, 0))
                 cv2.fillPoly(out, [np.array([face[idx] for idx in LandmarkConfig.outer_right_eye])], (133, 144, 205))
@@ -73,7 +110,9 @@ class Predictor:
                 cv2.fillPoly(out, [np.array([face[idx] for idx in LandmarkConfig.inner_right_eye])], (255, 255, 255))
                 cv2.fillPoly(out, [np.array([face[idx] for idx in LandmarkConfig.inner_left_eye])], (255, 255, 255))
 
-
+                # for i in range(5):
+                cv2.circle(out, (xs1[0], y1), 5, (0, 0, 0), -1)
+                cv2.circle(out, (xs2[0], y2), 5, (0, 0, 0), -1)
         return out
 
     def dp_predict(self, img, background_img):

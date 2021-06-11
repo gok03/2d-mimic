@@ -35,10 +35,11 @@ def run_webcam(args):
         background_img = cv2.resize(background_img, (frame.shape[1], frame.shape[0]), interpolation = cv2.INTER_AREA)
         out = dp_predictor.dp_predict(frame, background_img)
         # combined_image = np.concatenate((frame, out), axis=1)
-        #cv2.imshow('frame', out)
+        # cv2.imshow('frame', combined_image)
 
-        ## 2nd Camera ouput
+        # 2nd Camera ouput
         out=cv2.resize(out, (640, 480), interpolation=cv2.INTER_AREA)
+        out = cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
         camera.schedule_frame(out)
         if camera_started_flag:
             print("Camera started ...")
