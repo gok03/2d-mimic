@@ -43,6 +43,37 @@ python -m scripts.run_demo -v 1 -dv True -bg 1
     
 ```
 
+## For Running secondary camera
+```
+# Install v4l2loopback & its utils
+git clone https://github.com/umlaeute/v4l2loopback.git
+cd v4l2loopback
+make
+sudo make install
+sudo apt-get install v4l2loopback-utils
+
+# Install PyFakeWebCam & Its dependencies
+pip install pyfakewebcam 
+pip install numpy
+sudo apt-get install python-opencv 
+sudo apt-get install ffmpeg 
 
 
+# Create the secondary camera 
+sudo modprobe v4l2loopback video_nr=7 card_label="Also-Me" exclusive_caps=1
 
+# Check the created camera
+v4l2-ctl --list-devices 
+You should find something like - 
+Also-Me (platform:v4l2loopback-007):
+    /dev/video7
+
+# Now Run the demo
+python -m scripts.run_demo -bg 1
+
+# To see the new camera output
+ffplay /dev/video7
+
+# (Optional) To delete the secondary camera
+sudo modprobe -r v4l2loopback
+```
