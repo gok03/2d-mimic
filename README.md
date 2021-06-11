@@ -19,6 +19,8 @@ git clone https://github.com/facebookresearch/detectron2.git
 pip install -e detectron2
 
 pip install av
+pip install opencv-python
+pip install mediapipe
 pip install imutils
 
 cd 2d-mimic
