@@ -17,6 +17,7 @@ from densepose.vis.densepose_results import (
     DensePoseResultsVVisualizer,
 )
 
+
 cfg = get_cfg()
 add_densepose_config(cfg)
 
