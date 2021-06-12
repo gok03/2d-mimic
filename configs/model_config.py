@@ -7,7 +7,7 @@ import dlib
 configuration file for DensePose and dlib
 """
 
-sys.path.append("../../detectron2/projects/DensePose")
+sys.path.append("../detectron2/projects/DensePose")
 from densepose import add_densepose_config
 from densepose.vis.bounding_box import ScoredBoundingBoxVisualizer
 from densepose.vis.densepose_results import (
