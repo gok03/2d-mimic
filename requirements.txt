@@ -105,3 +105,4 @@ yacs==0.1.8
 yarl==1.6.3
 youtube-dl==2021.6.6
 zipp==3.4.1
+mediapipe
