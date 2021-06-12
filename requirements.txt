@@ -17,7 +17,6 @@ colorama==0.4.4
 colorlog==5.0.1
 cycler==0.10.0
 Cython==0.29.23
-dlib==19.22.0
 docutils==0.17.1
 EasyProcess==0.3
 entrypoint2==0.2.4
