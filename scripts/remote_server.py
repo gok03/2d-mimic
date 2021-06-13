@@ -10,7 +10,7 @@ from google.colab.patches import cv2_imshow
 from simplejpeg import decode_jpeg, encode_jpeg
 import msgpack
 import base64
-
+from pyngrok import ngrok
 from configs.color_config import ColorConfig
 from configs.model_config import detector, landmark_predictor
 from code.predictor import Predictor
@@ -38,9 +38,12 @@ def run_webcam(args):
     vis_type = args.get('vis_type', None)
     out_type = args.get('out_type', None)
     background_img = cv2.imread(f"backgrounds/bg1.jpg")
-
     background_img = cv2.cvtColor(background_img, cv2.COLOR_BGR2RGB)
     dp_predictor = Predictor(visualizer_type=vis_type, output_type=out_type)
+    connection_string = ngrok.connect(5555, "tcp").public_url
+    print("---------------------------")
+    print("python -m scripts.run_demo -bg 1 -rs 1 -rsip "+connection_string)
+    print("---------------------------")
     while True:
         frame = socket.recv()
         frame = decode_jpeg(unpack_message(frame), colorspace = "RGB", fastdct=True)
@@ -55,6 +58,7 @@ def run_webcam(args):
         socket.send(pack_message(encode_jpeg(out, colorspace = "RGB", fastdct=True)))
 
 if __name__ == '__main__':
+    ngrok.set_auth_token("1t4SKLGLQrQWbMnhgqeLMDoZWO5_81uYnSFsT87KsBm4A6zGZ")
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--vis-type", type=int, default=0,
                     help="Visualizer type (0, 1, 2, 3")
