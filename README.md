@@ -41,9 +41,12 @@ sudo modprobe v4l2loopback video_nr=7 card_label="Also-Me" exclusive_caps=1
 1. Change line 25 in /2d-mimic/configs/model_config.py to -> cfg.MODEL.DEVICE = 'cpu'
 2. cd 2d-mimic
 3. python -m scripts.run_demo -bg 1
+```
 
-# For using google colab as GPU server
-1. Open the code in colab using [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/gok03/2d-mimic/blob/main/Also_Me_collab_server.ipynb)
+### How to use (with remote GPU in google colab)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/gok03/2d-mimic/blob/main/Also_Me_collab_server.ipynb)
+```
+1. Open the code in colab using above colab badge
 2. Run all cells in colab and the command to run in local system will be ouput there.
 3. cd 2d-mimic
 4. use the copied command from colab (ex: python -m scripts.run_demo -bg 1 -rs 1 -rsip tcp://6.tcp.ngrok.io:18106)
